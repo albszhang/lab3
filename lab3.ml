@@ -3,9 +3,6 @@
                     Polymorphism and record types
  *)
 
-(*
-                               SOLUTION
- *)
 
 (*
 Objective:
@@ -15,117 +12,108 @@ record types. Some of the problems extend those from Lab 2, but we'll
 provide the necessary background code from that lab. *)
 
 (*======================================================================
-  Part 1: Records and tuples
+Part 1: Records and tuples
 
-  Records and tuples provide two different ways with which to package
-  together data. They differ in whether their components are selected by
-  name or by position, respectively.
+Records and tuples provide two different ways with which to package
+together data. They differ in whether their components are selected by
+name or by position, respectively.
 
-  Consider a point in Cartesian (x-y) coordinates. A point is specified
-  by its x and y values, which we'll take to be floats. We can package
-  these together as a pair (a 2-tuple), as in the following data type
-  definition: *)
+Consider a point in Cartesian (x-y) coordinates. A point is specified
+by its x and y values, which we'll take to be floats. We can package
+these together as a pair (a 2-tuple), as in the following data type
+definition: *)
 
 type point_pair = int * int ;;
 
 (* Then, we can add two points (summing their x and y coordinates
-   separately) with the following function:
-
-   let add_point_pair (p1 : point_pair) (p2 : point_pair) : point_pair =
-   let x1, y1 = p1 in
-   let x2, y2 = p2 in
-   (x1 + x2, y1 + y2) ;;
-
-   ........................................................................
-   Exercise 1:
-
-   It might be nicer to deconstruct the points in a single match, rather
-   than the two separate matches in the two let expressions. Reimplement
-   add_point_pair to use a single pattern match in a single let
-   expression.
-   ......................................................................*)
+separately) with the following function:
 
 let add_point_pair (p1 : point_pair) (p2 : point_pair) : point_pair =
-  let (x1, y1), (x2, y2) = p1, p2 in
+  let x1, y1 = p1 in
+  let x2, y2 = p2 in
   (x1 + x2, y1 + y2) ;;
 
+........................................................................
+Exercise 1:
+
+It might be nicer to deconstruct the points in a single match, rather
+than the two separate matches in the two let expressions. Reimplement
+add_point_pair to use a single pattern match in a single let
+expression.
+......................................................................*)
+
+let add_point_pair (p1 : int * int) (p2 : int * int) : int * int =
+  match p1, p2 with
+  | (x1, y1), (x2, y2) -> (x1 + x2, y1 + y2);;
+
 (* Analogously, we can define a point by using a record to package up
-   the x and y coordinates. *)
+the x and y coordinates. *)
 
 type point_recd = {x : int; y : int} ;;
 
 (*......................................................................
-  Exercise 2:
+Exercise 2:
 
-  Implement a function add_point_recd to add two points of type
-  point_recd and returning a point _rec as well.
-  ......................................................................*)
-
-(* A direct reimplementation of add_point_pair would be: *)
+Implement a function add_point_recd to add two points of type
+point_recd and returning a point_recd as well.
+......................................................................*)
 
 let add_point_recd (p1 : point_recd) (p2 : point_recd) : point_recd =
-  let {x = x1; y = y1}, {x = x2; y = y2} = p1, p2 in
-  {x = x1 + x2; y = y1 + y2} ;;
-
-(* By making use of dot notation for selecting pair elements, this
-   version may be a bit cleaner *)
-let add_point_recd (p1 : point_recd) (p2 : point_recd) : point_recd =
-  {x = p1.x + p2.x; y = p1.y + p2.y} ;;
+  match p1, p2 with
+  |{x = x1 ; y = y1}, {x = x2 ; y = y2} -> {x = x1 + x2 ; y = y1 + y2} ;;
 
 (* Recall the dot product from Lab 2. The dot product of two points
-   (x1, y1) and (x2, y2) is the sum of the products of their x and y
-   coordinates.
+(x1, y1) and (x2, y2) is the sum of the products of their x and y
+coordinates.
 
-   ........................................................................
-   Exercise 3: Write a function dot_product_pair to compute the dot
-   product for points encoded as the point_pair type.
-   ......................................................................*)
+........................................................................
+Exercise 3: Write a function dot_product_pair to compute the dot
+product for points encoded as the point_pair type.
+......................................................................*)
 
-let dot_product_pair (x1, y1 : point_pair) (x2, y2 : point_pair) : int =
-  x1 * x2 + y1 * y2 ;;
+let dot_product_pair (p1 : point_pair) (p2 : point_pair) : int =
+  match p1 ,p2 with
+  | (x1, y1), (x2, y2) -> (x1 * x2) + (y1 * y2);;
 
 (*......................................................................
-  Exercise 4: Write a function dot_product_recd to compute the dot
-  product for points encoded as the point_recd type.
-  ......................................................................*)
+Exercise 4: Write a function dot_product_recd to compute the dot
+product for points encoded as the point_recd type.
+......................................................................*)
 
 let dot_product_recd (p1 : point_recd) (p2 : point_recd) : int =
   p1.x * p2.x + p1.y * p2.y ;;
 
 (* Converting between the pair and record representations of points
 
-   You might imagine that the two representations have
-   different advantages, such that two libraries, say, might use
-   differing types for points. In that case, we may want to have
-   functions to convert between the two representations.
+You might imagine that the two representations have
+different advantages, such that two libraries, say, might use
+differing types for points. In that case, we may want to have
+functions to convert between the two representations.
 
-   ........................................................................
-   Exercise 5: Write a function point_pair_to_recd that converts a
-   point_pair to a point_recd.
-   ......................................................................*)
+........................................................................
+Exercise 5: Write a function point_pair_to_recd that converts a
+point_pair to a point_recd.
+......................................................................*)
 
 let point_pair_to_recd ((x, y) : point_pair) : point_recd =
   {x; y} ;;
 
-(* Note the use of deconstruction in the argument and of field
-   punning. *)
-
 (*......................................................................
-  Exercise 6: Write a function point_recd_to_pair that converts a
-  point_recd to a point_pair.
-  ......................................................................*)
+Exercise 6: Write a function point_recd_to_pair that converts a
+point_recd to a point_pair.
+......................................................................*)
 
 let point_recd_to_pair ({x; y} : point_recd) : point_pair =
   x, y ;;
 
 (*======================================================================
-  Part 2: A simple database of records
+Part 2: A simple database of records
 
-  A college wants to store student records in a simple database,
-  implemented as a list of individual course enrollments. The
-  enrollments themselves are implemented as a record type, called
-  "enrollment", with string fields labeled "name" and "course" and an
-  integer student id number labeled "id". An appropriate type might be:
+A college wants to store student records in a simple database,
+implemented as a list of individual course enrollments. The
+enrollments themselves are implemented as a record type, called
+"enrollment", with string fields labeled "name" and "course" and an
+integer student id number labeled "id". An appropriate type might be:
 *)
 
 type enrollment = { name : string;
@@ -146,239 +134,155 @@ let college =
   ] ;;
 
 (* In the following exercises, you'll want to avail yourself of the
-   List module functions, writing the requested functions in higher-order
-   style rather than handling the recursion yourself.
+List module functions, writing the requested functions in higher-order
+style rather than handling the recursion yourself.
 
-   ........................................................................
-   Exercise 7: Define a function called transcript that takes an
-   enrollment list and returns a list of all the enrollments for a given
-   student as specified with his or her id.
+........................................................................
+Exercise 7: Define a function called transcript that takes an
+enrollment list and returns a list of all the enrollments for a given
+student as specified with his or her id.
 
-   For example:
+For example:
 
     # transcript college 993855891 ;;
     - : enrollment list =
     [{name = "Sandy"; id = 993855891; course = "ls1b"};
      {name = "Sandy"; id = 993855891; course = "cs51"}]
-   ......................................................................*)
+......................................................................*)
 
 let transcript (enrollments : enrollment list)
-    (student : int)
-  : enrollment list =
+               (student : int)
+             : enrollment list =
   List.filter (fun { id; _ } -> id = student) enrollments ;;
-(*                   ^^--- field punning!
-
-                     Note the use of field punning, using the id variable to refer to
-                     the value of the id field.
-
-                     An alternative approach is to use the dot notation to pick out the
-                     record field.
-
-                     let transcript (enrollments : enrollment list)
-                     (student : int)
-                     : enrollment list =
-                     List.filter (fun studentrec -> studentrec.id = student)
-                     enrollments ;;
-*)
 
 (*......................................................................
-  Exercise 8: Define a function called ids that takes an enrollment
-  list and returns a list of all the id numbers in that enrollment list,
-  eliminating any duplicates. The sort_uniq function from the List
-  module may be useful here.
+Exercise 8: Define a function called ids that takes an enrollment
+list and returns a list of all the id numbers in that enrollment list,
+eliminating any duplicates. The sort_uniq function from the List
+module may be useful here.
 
-  For example:
+For example:
 
     # ids college ;;
     - : int list = [482958285; 603858772; 993855891]
-  ......................................................................*)
-
-(* Making good use of a library function List.sort_unique, as well as
-   Pervasives.compare, we have the following succinct implementation. *)
+......................................................................*)
 
 let ids (enrollments: enrollment list) : int list =
   List.sort_uniq (compare)
-    (List.map (fun student -> student.id) enrollments) ;;
-
-(* This time we used the alternative strategy of picking out the id
-   using dot notation. The aggregation to eliminate duplicates can also
-   be done using a fold. We leave that strategy as an additional
-   exercise. *)
+                 (List.map (fun student -> student.id) enrollments) ;;
 
 (*......................................................................
-  Exercise 9: Define a function called verify that determines whether all
-  the entries in an enrollment list for each of the ids appearing in the
-  list have the same name associated.
+Exercise 9: Define a function called verify that determines whether all
+the entries in an enrollment list for each of the ids appearing in the
+list have the same name associated.
 
-  For example:
-  # verify college ;;
-  - : bool = false
-  ......................................................................*)
+For example:
+# verify college ;;
+- : bool = false
+......................................................................*)
 
 let names (enrollments : enrollment list) : string list =
   List.sort_uniq (compare)
-    (List.map (fun { name; _ } -> name) enrollments) ;;
+                 (List.map (fun { name; _ } -> name) enrollments) ;;
 
 let verify (enrollments : enrollment list) : bool =
   List.for_all (fun l -> List.length l = 1)
-    (List.map
-       (fun student -> names (transcript enrollments student))
-       (ids enrollments)) ;;
-
+               (List.map
+                  (fun student -> names (transcript enrollments student))
+                  (ids enrollments)) ;;
 (*======================================================================
-  Part 3: Polymorphism
+Part 3: Polymorphism
 
-  ........................................................................
-  Exercise 10: In Lab 2, you implemented a function zip that takes two
-  lists and "zips" them together into a list of pairs. Here's a possible
-  implementation of zip:
+........................................................................
+Exercise 10: In Lab 2, you implemented a function zip that takes two
+lists and "zips" them together into a list of pairs. Here's a possible
+implementation of zip:
 
-  let rec zip (x : int list) (y : int list) : (int * int) list =
+let rec zip (x : int list) (y : int list) : (int * int) list =
   match x, y with
   | [], [] -> []
   | xhd :: xtl, yhd :: ytl -> (xhd, yhd) :: (zip xtl ytl) ;;
 
-  As implemented, this function works only on integer lists. Revise your
-  solution to operate polymorphically on lists of any type. What is the
-  type of the result? Did you provide full typing information in the
-  first line of the definition? (As usual, for the time being, don't
-  worry about explicitly handling the anomalous case when the two lists
-  are of different lengths.)
-  ......................................................................*)
+As implemented, this function works only on integer lists. Revise your
+solution to operate polymorphically on lists of any type. What is the
+type of the result? Did you provide full typing information in the
+first line of the definition? (As usual, for the time being, don't
+worry about explicitly handling the anomalous case when the two lists
+are of different lengths.)
+......................................................................*)
 
 let rec zip (x : 'a list) (y : 'b list) : ('a * 'b) list =
   match x, y with
-  | [], [] -> []
+  | [], _ -> []
+  | _, [] -> []
   | xhd :: xtl, yhd :: ytl -> (xhd, yhd) :: (zip xtl ytl) ;;
 
-(* Notice how a polymorphic typing was provided in the first line, to
-   capture the intention of the polymorphic function. *)
-
 (*......................................................................
-  Exercise 11: Partitioning a list -- Given a boolean function, say
+Exercise 11: Partitioning a list -- Given a boolean function, say
 
     fun x -> x mod 3 = 0
 
-  and a list of elements, say,
+and a list of elements, say,
 
     [3; 4; 5; 10; 11; 12; 1]
 
-  we can partition the list into two lists, the list of elements
-  satisfying the boolean function ([3; 12]) and the list of elements
-  that don't ([4; 5; 10; 11; 1]).
+we can partition the list into two lists, the list of elements
+satisfying the boolean function ([3; 12]) and the list of elements
+that don't ([4; 5; 10; 11; 1]).
 
-  The function "partition" partitions its list argument in just this
-  way, returning a pair of lists. Here's an example:
+The function "partition" partitions its list argument in just this
+way, returning a pair of lists. Here's an example:
 
     # partition (fun x -> x mod 3 = 0) [3; 4; 5; 10; 11; 12; 1] ;;
     - : int list * int list = ([3; 12], [4; 5; 10; 11; 1])
 
-  What is the type of the partition function, keeping in mind that it
-  should be as polymorphic as possible?
+What is the type of the partition function, keeping in mind that it
+should be as polymorphic as possible?
 
-  Now write the function.
-  ......................................................................*)
+Now write the function.
+......................................................................*)
 
-(* Start with the type. The boolean condition might apply to elements
-   of any type, so it should be a function of type 'a -> bool. The lst
-   must contain elements appropriate to apply the condition to, that is,
-   elements of type 'a, so the list itself is of type 'a list. The result
-   is a pair of lists, each of which contains elementsof type 'a, that
-   is, 'a list * 'a list. The type of partition itself is then
-
-    ('a -> bool) -> 'a list -> 'a list * 'a list
-
-   The implementation is really straightforward if we just reuse the
-   filtering functionality of the List.filter function.
-*)
-
-let partition (condition : 'a -> bool) (lst : 'a list)
-  : 'a list * 'a list =
+let partition (condition : 'a -> bool) (lst : 'a list) : 'a list * 'a list =
   let open List in
   filter condition lst, filter (fun x -> not (condition x)) lst ;;
-
-(* If, instead, we want to perform the walk of the list directly, we
-   might have
-
-   let rec partition (condition : 'a -> bool) (lst : 'a list)
-                  : 'a list * 'a list =
-    match lst with
-    | [] -> [], []
-    | hd :: tl ->
-        let yeses, noes =  partition condition tl in
-        if condition hd then (hd :: yeses), noes
-        else yeses, (hd :: noes) ;;
-
-   An implementation with a single fold is also possible.
-
-   let partition (condition : 'a -> bool) (lst : 'a list)
-              : 'a list * 'a list =
-    List.fold_right (fun elt (yeses, noes) ->
-                       if condition elt then (elt :: yeses), noes
-                       else yeses, (elt :: noes))
-                    lst ([], []) ;;
-*)
-
-
-
 (*......................................................................
-  Exercise 12: We can think of function application itself as a
-  higher-order function (!). It takes two arguments -- a function and
-  its argument -- and returns the value obtained by applying the
-  function to its argument. In this exercise, you'll write this
-  function, called "apply". You might use it as in the following examples:
+Exercise 12: We can think of function application itself as a
+higher-order function (!). It takes two arguments -- a function and
+its argument -- and returns the value obtained by applying the
+function to its argument. In this exercise, you'll write this
+function, called "apply". You might use it as in the following examples:
 
     # apply pred 42 ;;
     - : int = 41
     # apply (fun x -> x ** 2.) 3.14159 ;;
     - : float = 9.86958772809999907
 
-  (You may think such a function isn't useful, since we already have an
-  even more elegant notation for function application, as in
+(You may think such a function isn't useful, since we already have an
+even more elegant notation for function application, as in
 
     # pred 42 ;;
     - : int = 41
     # (fun x -> x ** 2.) 3.14159 ;;
     - : float = 9.86958772809999907
 
-  But we'll see a quite useful operator that works similarly -- the
-  backwards application operator -- in Chapter 11 of the textbook.)
+But we'll see a quite useful operator that works similarly -- the
+backwards application operator -- in Chapter 11 of the textbook.)
 
-  Start by thinking about the type of the function. We'll assume it
-  takes its two arguments curried, that is, one at a time.
+Start by thinking about the type of the function. We'll assume it
+takes its two arguments curried, that is, one at a time.
 
-  What is the most general (polymorphic) type for its first argument
-  (the function to be applied)?
+What is the most general (polymorphic) type for its first argument
+(the function to be applied)?
 
-  What is the most general type for its second argument (the argument to
-  apply it to)?
+What is the most general type for its second argument (the argument to
+apply it to)?
 
-  What is the type of its result?
+What is the type of its result?
 
-  Given the above, what should the type of the function "apply" be?
+Given the above, what should the type of the function "apply" be?
 
-  Now write the function.
-  ......................................................................*)
-(* Thinking through the types of the "apply" function:
-
-   Its first argument, the function to be applied, itself takes an
-   argument of some generic type, call it 'arg. (We're not restricted to
-   type variables like 'a, 'b, c. We might as well use a good mnemonic
-   type variable name like 'arg.) The result type for the function to be
-   applied we'll call 'result. So the type of the first argument is 'arg
-   -> 'result.
-
-   Its second argument is the argument to apply that function to, and
-   must thus be of type 'arg.
-
-   The result of the application is, of course, 'result.
-
-   So the type for apply is given by the typing:
-
-    apply : ('arg -> 'result) -> 'arg -> 'result
-
-   Types in hand, the apply function itself is truly trivial to
-   implement: *)
+Now write the function.
+......................................................................*)
 
 let apply (func : 'arg -> 'result) (arg : 'arg) : 'result =
   func arg ;;
